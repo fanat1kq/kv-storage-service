@@ -83,8 +83,15 @@ public class TarantoolKvRepository {
     }
 
     private byte[] extractBytes(Object raw) {
-        if (raw instanceof byte[] bytes) return bytes;
-        if (raw instanceof String s) return s.getBytes(StandardCharsets.ISO_8859_1);
+        if (raw == null) {
+            return new byte[0];
+        }
+        if (raw instanceof byte[] bytes) {
+            return bytes;
+        }
+        if (raw instanceof String s) {
+            return s.getBytes(StandardCharsets.ISO_8859_1);
+        }
         return new byte[0];
     }
 

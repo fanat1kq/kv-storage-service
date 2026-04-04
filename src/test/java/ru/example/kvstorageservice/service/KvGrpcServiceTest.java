@@ -21,6 +21,7 @@ import ru.example.kvstorageservice.grpc.KeyValue;
 import ru.example.kvstorageservice.grpc.PutRequest;
 import ru.example.kvstorageservice.grpc.RangeRequest;
 import ru.example.kvstorageservice.repository.TarantoolKvRepository;
+import ru.example.kvstorageservice.validation.KvRequestValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,5 +135,38 @@ class KvGrpcServiceTest extends BaseIntegrationTest {
 
         CountResponse response = stub.count(CountRequest.newBuilder().build());
         assertThat(response.getCount()).isGreaterThanOrEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("PUT with empty key returns INVALID_ARGUMENT")
+    void put_emptyKey_invalidArgument() {
+        StatusRuntimeException ex = assertThrows(StatusRuntimeException.class,
+            () -> stub.put(PutRequest.newBuilder().setKey("").setValue(ByteString.copyFromUtf8("x")).build()));
+        assertThat(ex.getStatus().getCode()).isEqualTo(Status.Code.INVALID_ARGUMENT);
+    }
+
+    @Test
+    @DisplayName("PUT with key longer than limit returns INVALID_ARGUMENT")
+    void put_keyTooLong_invalidArgument() {
+        String key = "a".repeat(KvRequestValidator.MAX_KEY_BYTES + 1);
+        StatusRuntimeException ex = assertThrows(StatusRuntimeException.class,
+            () -> stub.put(PutRequest.newBuilder().setKey(key).setValue(ByteString.copyFromUtf8("v")).build()));
+        assertThat(ex.getStatus().getCode()).isEqualTo(Status.Code.INVALID_ARGUMENT);
+    }
+
+    @Test
+    @DisplayName("RANGE with key_since greater than key_to returns INVALID_ARGUMENT")
+    void range_invertedBounds_invalidArgument() {
+        StatusRuntimeException ex = assertThrows(StatusRuntimeException.class,
+            () -> stub.range(RangeRequest.newBuilder().setKeySince("z").setKeyTo("a").build()).hasNext());
+        assertThat(ex.getStatus().getCode()).isEqualTo(Status.Code.INVALID_ARGUMENT);
+    }
+
+    @Test
+    @DisplayName("GET with empty key returns INVALID_ARGUMENT")
+    void get_emptyKey_invalidArgument() {
+        StatusRuntimeException ex = assertThrows(StatusRuntimeException.class,
+            () -> stub.get(GetRequest.newBuilder().setKey("").build()));
+        assertThat(ex.getStatus().getCode()).isEqualTo(Status.Code.INVALID_ARGUMENT);
     }
 }
