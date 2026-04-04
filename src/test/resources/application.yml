@@ -1,0 +1,3 @@
+tarantool:
+  user: testuser
+  password: testpass
