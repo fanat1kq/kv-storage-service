@@ -45,16 +45,26 @@ docker-compose up -d
 
 ### Управление данными
 # 1. Put (сохранить значение)
+```bash
 grpcurl -plaintext -d '{"key":"test","value":"SGVsbG8="}' localhost:8080 kvservice.KVService/Put
+```
 
 # 2. Get (получить значение)
+```bash
 grpcurl -plaintext -d '{"key":"test"}' localhost:8080 kvservice.KVService/Get
+```
 
 # 3. Count (количество записей)
+```bash
 grpcurl -plaintext -d '{}' localhost:8080 kvservice.KVService/Count
+```
 
 # 4. Range (диапазон)
+```bash
 grpcurl -plaintext -d '{"keySince":"a","keyTo":"z"}' localhost:8080 kvservice.KVService/Range
+```
 
 # 5. Delete (удалить)
+```bash
 grpcurl -plaintext -d '{"key":"test"}' localhost:8080 kvservice.KVService/Delete
+```
