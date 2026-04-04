@@ -32,8 +32,13 @@ public class TarantoolConstants {
 
     private static final String BOX_SPACE = "return box.space.";
 
-    public static final String PUT_LUA =
-        BOX_SPACE + SPACE_NAME + ":replace({...})";
+    public static final String PUT_LUA = """
+        local key, value = ...
+        if value == nil then
+            return box.space.KV:replace({key, box.NULL})
+        end
+        return box.space.KV:replace({key, value})
+        """;
 
     public static final String DELETE_LUA =
         BOX_SPACE + SPACE_NAME + ":delete(...)";

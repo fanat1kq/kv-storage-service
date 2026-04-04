@@ -24,7 +24,11 @@ public class TarantoolKvRepository {
     private final TarantoolClient client;
 
     public void put(String key, byte[] value) {
-        client.eval(PUT_LUA, Arrays.asList(key, value)).join();
+        if (value == null) {
+            client.eval(PUT_LUA, List.of(key)).join();
+        } else {
+            client.eval(PUT_LUA, Arrays.asList(key, value)).join();
+        }
     }
 
     public GetResult get(String key) {
@@ -83,8 +87,15 @@ public class TarantoolKvRepository {
     }
 
     private byte[] extractBytes(Object raw) {
-        if (raw instanceof byte[] bytes) return bytes;
-        if (raw instanceof String s) return s.getBytes(StandardCharsets.ISO_8859_1);
+        if (raw == null) {
+            return null;
+        }
+        if (raw instanceof byte[] bytes) {
+            return bytes;
+        }
+        if (raw instanceof String s) {
+            return s.getBytes(StandardCharsets.ISO_8859_1);
+        }
         return new byte[0];
     }
 
