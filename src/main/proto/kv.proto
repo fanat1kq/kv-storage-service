@@ -39,7 +39,6 @@ message DeleteResponse {
 message RangeRequest {
   string key_since = 1;
   string key_to = 2;
-  optional int32 limit = 3;
 }
 
 message KeyValue {
