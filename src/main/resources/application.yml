@@ -8,11 +8,9 @@ tarantool:
   port: ${TARANTOOL_PORT:3301}
   user: ${TARANTOOL_USER:guest}
   password: ${TARANTOOL_PASSWORD:}
-
 grpc:
   server:
     port: ${GRPC_SERVER_PORT:8080}
-
 logging:
   level:
     ru.example.kvstorageservice.service: DEBUG
